@@ -24,7 +24,7 @@ jQuery(document).ready(function(){
     jQuery("#sort_by").change(function(){
         jQuery("#process_data").hide();
         jQuery("#search").val("");
-        jQuery("#show_rec").val("");
+        jQuery("#show_rec").val("all");
         overlay();
         jQuery.ajax({
                 type: "POST",
@@ -38,7 +38,7 @@ jQuery(document).ready(function(){
     jQuery("#search_btn").click(function(){
         jQuery("#process_data").hide();
         jQuery("#sort_by").val("customer_id");
-        jQuery("#show_rec").val("");
+        jQuery("#show_rec").val("all");
         if(jQuery("#search").val() != ""){
             if(!/^[a-z0-9* ]+$/i.test(jQuery("#search").val())) {
                 alert('Name can only be alpha numeric with space.');
