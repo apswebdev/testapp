@@ -2,4 +2,4 @@ testapp
 =======
 
 This is for testapp files. 
-Sample test @ http://apsaludsonglabs.com/testapp
+For more info about me at http://apsaludsonglabs.com
