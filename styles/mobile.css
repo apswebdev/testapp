@@ -27,4 +27,8 @@
             font-size:14px;
             margin-right:12px;
     }
+    #process_data input {
+        width: 199px;
+        float: left;
+    }
     
