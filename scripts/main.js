@@ -8,6 +8,8 @@ jQuery(document).ready(function(){
         jQuery("#main_content").append("<div id='background'></div><div id='loader'></div>");
     }
     jQuery("#show_rec").change(function(){
+        var data_obj = {start:0,limit:jQuery("#show_rec").val()};
+	data_obj = jQuery.toJSON(data_obj);
         jQuery("#process_data").hide();
         jQuery("#search").val("");
         jQuery("#sort_by").val("customer_id");
@@ -16,7 +18,7 @@ jQuery(document).ready(function(){
                 type: "POST",
                 url: jQuery("#base_url").val() + "/paginate",
                 cache: false,
-                data: { args:jQuery(this).val() }
+                data: { args:data_obj}
         }).done(function( msg ) {
                 jQuery("#main_content").html(msg);
         });	
@@ -243,6 +245,45 @@ jQuery(document).ready(function(){
         }).done(function( msg ) {
                 jQuery("#remarks_email").html("<span style='color:green;margin:5px 0px 20px 0px;'>Successfully sent data!</span>");
         });
-    });	 
+    });
+    jQuery('body').on('click','#next',function(){
+	var data_obj = {start:parseInt(jQuery('#paginate_page').val()) + 1,limit:jQuery("#show_rec").val()};
+	data_obj = jQuery.toJSON(data_obj);		
+	overlay();
+	jQuery.ajax({
+                type: 'POST',
+                url: jQuery("#base_url").val() + "/paginate",
+                cache: false,
+                data: { args: data_obj }
+        }).done(function( msg ) {
+                jQuery('#main_content').html(msg);
+	});
+    });
+    jQuery('body').on('click','#prev',function(){
+            var data_obj = {start:parseInt(jQuery('#paginate_page').val()) - 1,limit:jQuery("#show_rec").val()};
+            data_obj = jQuery.toJSON(data_obj);	
+            overlay();
+            jQuery.ajax({
+                    type: 'POST',
+                    url: jQuery("#base_url").val() + "/paginate",
+                    cache: false,
+                    data: { args: data_obj }
+            }).done(function( msg ) {
+                    jQuery('#main_content').html(msg);
+            });
+    });                            
+    jQuery('body').on('change','#paginate_page',function(){
+            var data_obj = {start:jQuery(this).val(),limit:jQuery("#show_rec").val()};
+            data_obj = jQuery.toJSON(data_obj);	
+            overlay();
+            jQuery.ajax({
+                    type: 'POST',
+                    url: jQuery("#base_url").val() + "/paginate",
+                    cache: false,
+                    data: { args: data_obj }
+            }).done(function( msg ) {
+                    jQuery('#main_content').html(msg);
+            });
+    });
 });
 

@@ -280,8 +280,12 @@ class display_screen{
      */    
     protected static function paginate(){
         
-        $limit = trim($_POST["args"]);
-        
+        $j = json_decode($_POST["args"]);
+        $limit = $j->limit;
+        $start = $j->start;
+        $total = self::total_count();
+        $start_main = ($start * $limit) - $limit;
+        if($start_main < 0) $start_main = 0;
         
         if($limit == "all"){
             // redisplay table
@@ -301,16 +305,101 @@ class display_screen{
                                       LEFT JOIN transactions p 
                                       ON p.transactions_customer_id = cust.customer_id 
                                       GROUP BY p.transactions_customer_id
-                                      LIMIT $limit",
+                                      LIMIT $start_main, $limit",
                            'bind' => '',
                            'fields' => '');
         
             
         }
+        
         $data["customers"] = db::execute_query($query,true);
+        $data["pagination_links"] = self::create_pagination_links($total,$limit,$start);
         self::add_screen("main_table",$data);
+        exit();
 
     }    
+
+    /**
+     * create pagination links
+     * 
+     * @param integer total record format
+     * @param integer count per page
+     * @param integer selected page
+     * @return string | html structure for bottom links
+     */        
+    protected static function create_pagination_links($total = NULL, 
+                                                      $count_per_page = NULL, 
+                                                      $selected_page = 0 ){
+                 
+        $html = "";
+
+        if(($total == NULL ) ||
+           ($count_per_page == NULL || $count_per_page == "")) return "";
+
+           @$ceiling = ceil($total / $count_per_page);
+
+           if($ceiling > 1){
+
+                $html .= "<div style='padding:12px;float:left; clear:both'>";
+
+                if(($ceiling - $selected_page) != ($ceiling - 1) && ($selected_page != 0)){
+                   $html .= "<a href='javascript:;' id='prev' style='margin:12px'>prev</a>";
+                }
+
+                $html .= "<select id='paginate_page' style='width:100px'>";
+
+                          for($x = 1; $x <= $ceiling; $x++){
+                                  //$start = $x - 1;
+                                  $start = $x;
+                                  if($x == $selected_page){
+                                      $sel = 'selected="selected"';
+                                  } else {
+                                      $sel = "";
+                                  }    
+                                  $html .= "<option value='".$start."' ".$sel.">".$x."</option>";
+                          }
+
+                $html .= "</select>";
+
+                if(($ceiling - $selected_page) != 0){
+                        $html .= "<a href='javascript:;' id='next' style='margin:12px'>next</a>";
+                }
+
+                $html .= "</div>";
+                return $html;   
+            }
+
+        return "";
+
+    }    
+ 
+    /**
+     * count total records from testapp db
+     * 
+     * @param none
+     * @return integer total count of records
+     */           
+    protected static function total_count(){
+        
+        //get total count
+        $total_count = 0;
+        
+        $query = array('stmt' => "SELECT COUNT(1) as total 
+                                  FROM customers",
+                       'bind' => '',
+                       'fields' => '');
+        
+            
+        
+        $total = db::execute_query($query,true);
+        
+        if(count($total) > 0){
+          $total_count = $total[0]["total"];    
+        }
+        
+        return $total_count;
+        
+    }
     
     /**
      * Load transactions per user

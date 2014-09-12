@@ -3,7 +3,7 @@
 /* 
  * Displays all customer table
  */
-$data = $data["customers"];
+$cust = $data["customers"];
 
 // actual display table
 echo "<table id='main_table'>
@@ -15,7 +15,7 @@ echo "<table id='main_table'>
             <td>Transactions</td>
         </tr>" . PHP_EOL;
 
-foreach($data as $val){
+foreach($cust as $val){
         
         echo "<tr>
                  <td class='c_id'>".$val["customer_id"]."</td>
@@ -38,6 +38,10 @@ foreach($data as $val){
 }
 
 echo  "</table>";
+
+if( isset($data["pagination_links"]) && $data["pagination_links"] != "" ){
+    echo "<div style='float:left; clear:both; margin:20px 0px'>".$data["pagination_links"]."</div>";
+}
 
 if(count($data) == 0){
     echo "<h3 style='float:left; margin:50px auto;'>0 RECORD FOUND.</h3>";
