@@ -12,10 +12,11 @@ class db{
      * @param none
      * @return   
      */
-    public static $host = "localhost";
-    public static $user = "test";
-    public static $pass = "test";
-    public static $db = "testapp";
+    protected static $host = "localhost";
+    protected static $user = "test";
+    protected static $pass = "test";
+    protected static $db = "testapp";
+    protected static $admin_email = "anwar_saludsong@yahoo.com";
 
     /**
      * Connect to database
@@ -47,27 +48,24 @@ class db{
      */
      protected static function log_db_errors( $error, $query ){
         
-        define(ADMIN_EMAIL,"anwar_saludsong@yahoo.com"); 
+        define(ADMIN_EMAIL,self::$admin_email); 
         $message = '<p>Error at '. date('Y-m-d H:i:s').':</p>';
         $message .= '<p>Query: '. htmlentities( $query ).'<br />';
         $message .= 'Error: ' . $error;
         $message .= '</p>';
         
-        if( defined( 'SEND_ERRORS_TO' ) ){
+        if( self::$admin_email != "" ){
             $headers = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
             $headers .= 'To: Admin <'.ADMIN_EMAIL.'>' . "\r\n";
-            $headers .= 'From: Yoursite <system@'.$_SERVER['SERVER_NAME'].'.com>' . "\r\n";
+            $headers .= 'From: TESTAPP <system@'.$_SERVER['SERVER_NAME'].'.com>' . "\r\n";
             mail( ADMIN_EMAIL, 'Database Error', $message, $headers );
         
             
         } else {
             trigger_error( $message );
         }
-        
-        if( !defined( 'DISPLAY_DEBUG' ) || ( defined( 'DISPLAY_DEBUG' ) && DISPLAY_DEBUG ) ) {
-            echo $message;
-        }
+
     }
 
     
