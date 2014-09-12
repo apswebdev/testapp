@@ -7,6 +7,10 @@ jQuery(document).ready(function(){
     function overlay(){
         jQuery("#main_content").append("<div id='background'></div><div id='loader'></div>");
     }
+    function scrolltp(){
+        var body = jQuery("html, body");
+        body.animate({scrollTop:0}, '1200');
+    }
     jQuery("#show_rec").change(function(){
         var data_obj = {start:0,limit:jQuery("#show_rec").val()};
 	data_obj = jQuery.toJSON(data_obj);
@@ -84,7 +88,7 @@ jQuery(document).ready(function(){
         jQuery("#process_data").show();
         jQuery(".btn1").hide();
         jQuery("#update_btn").show();
-        window.scrollTo('0px', '0px');
+        scrolltp();
         jQuery("#cust_name").focus();
     }); 
     jQuery("body").on('click','.transactions', function(){
@@ -99,6 +103,7 @@ jQuery(document).ready(function(){
         jQuery("#transactions_t").html("<div style='color:red'>&nbsp;&nbsp;Loading transactions...<div>");
         jQuery("#transactions").show();
         jQuery("#process_data").show();
+        scrolltp();
         jQuery.ajax({
                 type: "POST",
                 url: jQuery("#base_url").val() + "/view_transactions",
@@ -106,7 +111,6 @@ jQuery(document).ready(function(){
                 data: { args:id }
         }).done(function( msg ) {
                 jQuery("#transactions_t").html(msg);
-                window.scrollTo('0px', '0px');
         });
     }); 
     jQuery("body").on('click','#close', function(){
