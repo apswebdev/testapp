@@ -1,0 +1,30 @@
+    #container{
+       width:100%;
+       margin:20px auto;
+    }
+    .filter_inner{
+            float:left !important;
+            width:100% !important;
+            margin-left:12px;
+            clear:both;
+    }
+    .filter_inner h1, .filter_inner p {
+            float:left;
+            width:40%;
+    }
+    .filter_inner h1 {
+            text-align:right;
+    }
+    .filter_inner select {
+
+            width:200px;
+    }
+    .filter_inner .input {
+
+            width:195px;
+    }
+    .filter_inner h1 {
+            font-size:14px;
+            margin-right:12px;
+    }
+    
