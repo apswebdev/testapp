@@ -93,6 +93,7 @@ require_once 'header.php';
             <table id="data_table">
                 <tr>
                     <td style='text-align:right; font-weight:bold;'>Customer Name:</td>
+                    <input type="hidden" id="cust_id_t" value="">
                     <td id="cust_name_t" style='text-align:left; padding-left:12px;'></td>
                 </tr>
                 <tr>

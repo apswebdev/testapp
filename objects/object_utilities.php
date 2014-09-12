@@ -14,28 +14,19 @@ class utility{
      * @param string error data
      * @return mixed email errors
      */
-    public static function email_data(){
+    public static function email_data($message,$email){
 
-        define(ADMIN_EMAIL,"anwar_saludsong@yahoo.com"); 
-        $message = '<p>Error at '. date('Y-m-d H:i:s').':</p>';
-        $message .= '<p>Query: '. htmlentities( $query ).'<br />';
-        $message .= 'Error: ' . $error;
-        $message .= '</p>';
+        define(ADMIN_EMAIL,$email); 
         
-        if( defined( 'SEND_ERRORS_TO' ) ){
+        if( $message && $email ){
             $headers = 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
             $headers .= 'To: Admin <'.ADMIN_EMAIL.'>' . "\r\n";
-            $headers .= 'From: Yoursite <system@'.$_SERVER['SERVER_NAME'].'.com>' . "\r\n";
+            $headers .= 'From: TESTAPP.com <system@'.$_SERVER['SERVER_NAME'].'.com>' . "\r\n";
             mail( ADMIN_EMAIL, 'Database Error', $message, $headers );
-        
-            
+            exit("Successfully sent information");
         } else {
-            trigger_error( $message );
-        }
-        
-        if( !defined( 'DISPLAY_DEBUG' ) || ( defined( 'DISPLAY_DEBUG' ) && DISPLAY_DEBUG ) ) {
-            echo $message;
+            exit("Error sending information");
         }
         
     }

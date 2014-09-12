@@ -88,6 +88,7 @@ jQuery(document).ready(function(){
     jQuery("body").on('click','.transactions', function(){
         var ptr = jQuery(this).parents("tr");
         var id = jQuery(ptr).find('.c_id').eq(0).html();
+        jQuery("#cust_id_t").val(jQuery(ptr).find('.c_id').eq(0).html());
         jQuery("#cust_name_t").html(jQuery(ptr).find('.c_name').eq(0).html());
         jQuery("#cust_email_t").html(jQuery(ptr).find('.c_email').eq(0).html());
         jQuery("#cust_country_t").html(jQuery(ptr).find('.c_country').eq(0).val());
@@ -229,10 +230,10 @@ jQuery(document).ready(function(){
     });	 
     jQuery("body").on("click","#send_email",function(){
         jQuery("#remarks_email").html("<span style='color:red'>Sending data to customer email...</span>");
-        var data_obj = {id:jQuery("#cust_id").val(), 
-                        name: jQuery("#cust_name").val() , 
-                        email: jQuery("#cust_email").val(),
-                        country:jQuery("#cust_country").val()};
+        var data_obj = {id:jQuery("#cust_id_t").val(), 
+                        name: jQuery("#cust_name_t").html() , 
+                        email: jQuery("#cust_email_t").html(),
+                        country:jQuery("#cust_country_t").html()};
         data_obj = jQuery.toJSON(data_obj);
         jQuery.ajax({
                 type: "POST",

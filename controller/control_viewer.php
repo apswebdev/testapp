@@ -342,14 +342,80 @@ class display_screen{
      */    
     protected static function send_email(){
         
-        $id = trim($_POST["args"]);
+        $j = json_decode($_POST["args"]);
         
-        // redisplay table
-
+        $id = $j->id;
+        $name = $j->name;
+        $email = $j->email;
+        $country = $j->country;
         
-        //$data["transactions"] = db::execute_query($query,true);
-        //self::add_screen("view_transactions",$data);
-        //exit();
+        //basic information
+        $html ="<p>
+                   Hello $name, <br><br>
+                   We are pleased to inform you about your latest information on testapp below:    
+                   <br><br>    
+                </p>
+                <h1>Your Current Information at TESTAPP</h1>
+                  <table>
+                    <tr>
+                        <td>ID</td>
+                        <td>Name</td>
+                        <td>Email</td>
+                        <td>Country</td>
+                    </tr>
+                    <tr>
+                        <td>$id</td>
+                        <td>$name</td>
+                        <td>$email</td>
+                        <td>$country</td>
+                    </tr>
+                  </table>";  
+        
+        //transactions
+        $query = array('stmt' => "SELECT * FROM transactions
+                                  WHERE transactions_customer_id = ?",
+                       'bind' => 'i',
+                       'fields' => $id);
+        
+        $transactions = db::execute_query($query,true);
+        
+        $html .= "<h1>List of all your transactions</h1>
+                  <table>
+                    <tr>
+                        <td>ID</td>
+                        <td>Item</td>
+                        <td>Price</td>
+                        <td>Date</td>
+                    </tr>";
+        
+        $total = 0;
+        
+        foreach($transactions as $t){
+            $total += $t['transactions_amount'];    
+            $html .= "<tr>
+                        <td>".$t['transactions_id']."</td>
+                        <td>".$t['transactions_item']."</td>
+                        <td>".$t['transactions_amount']."</td>
+                        <td>".date("M jS\, Y",  strtotime($t["transactions_date"]))."</td>
+                     </tr>";
+            
+        }
+        
+        $html .= "<tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td style='color:green; font-size:18px; margin:12px 0px; padding-top:5px; border-top:1px dashed #333'>Total: ".number_format($total, 2, '.', ',')."</td>
+                </tr>
+             </table>
+             <p><br><br>
+                   Best Regards, <br>
+                   TestApp Team    
+                   <br><br>    
+             </p>";
+        
+        utility::email_data($html, $email);
+        exit();
 
     }  
     
