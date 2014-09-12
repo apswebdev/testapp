@@ -100,7 +100,7 @@ jQuery(document).ready(function(){
         jQuery("#cust_country_t").html(jQuery(ptr).find('.c_country').eq(0).val());
         jQuery("#process_data #tle").html("Transactions of " + jQuery(ptr).find('.c_name').eq(0).html());
         jQuery("#data_table").hide();
-        jQuery("#transactions_t").html("<div style='color:red'>&nbsp;&nbsp;Loading transactions...<div>");
+        jQuery("#transactions_t").html("<div style='color:red; margin:12px 0px 30px'>&nbsp;&nbsp;Loading transactions...<div>");
         jQuery("#transactions").show();
         jQuery("#process_data").show();
         scrolltp();
