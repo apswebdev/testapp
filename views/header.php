@@ -10,7 +10,7 @@
         <meta name="description" content="" />
         <meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE" />
 
-        <link rel="stylesheet" type="text/css" href="styles/reset.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="styles/rst.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="styles/large.css" media="screen and (min-width:1010px)" />
         <link rel="stylesheet" type="text/css" href="styles/medium.css" media="screen and (min-width:820px) and (max-width:1009px)" />
         <link rel="stylesheet" type="text/css" href="styles/mobile.css" media="screen and (max-width:819px)" />

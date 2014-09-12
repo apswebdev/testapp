@@ -7,7 +7,7 @@ $data = $data["transactions"];
 
 // actual display table
 // if the there are records
-if(count($data) > 0){
+if(!empty($data)){
     
     echo "<table id='tr_table'>
              <tr>
