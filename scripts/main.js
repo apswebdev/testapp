@@ -11,6 +11,36 @@ jQuery(document).ready(function(){
         var body = jQuery("html, body");
         body.animate({scrollTop:0}, '1200');
     }
+    function process_data($proc){
+        jQuery("#remarks").show();
+        jQuery("#remarks").html("<span style='color:red'>Saving Data...</span>");
+        overlay();
+        if($proc == "update"){
+            $url = jQuery("#base_url").val() + "/update_customer";
+            var data_obj = {id:jQuery("#cust_id").val(), 
+                            name: jQuery("#cust_name").val() , 
+                            email: jQuery("#cust_email").val(),
+                            country:jQuery("#cust_country").val()};
+            data_obj = jQuery.toJSON(data_obj);
+        }
+        else if($proc == "insert"){
+            $url = jQuery("#base_url").val() + "/add_customer";
+            var data_obj = {name: jQuery("#cust_name").val() , 
+                            email: jQuery("#cust_email").val(),
+                            country:jQuery("#cust_country").val()};
+            data_obj = jQuery.toJSON(data_obj);
+        }
+        jQuery.ajax({
+                type: "POST",
+                url: $url,
+                cache: false,
+                data: { args:data_obj }
+        }).done(function( msg ) {
+                jQuery("#remarks").html("");
+                jQuery("#remarks").hide();
+                jQuery("#main_content").html(msg);
+        });
+    }
     jQuery("#show_rec").change(function(){
         var data_obj = {start:0,limit:jQuery("#show_rec").val()};
 	data_obj = jQuery.toJSON(data_obj);
@@ -155,40 +185,40 @@ jQuery(document).ready(function(){
         if(jQuery("#cust_name").val() == ""){
             err += "Customer Name is required.\n";
         }
+        if(jQuery("#cust_country").val() == ""){
+            err += "Country is required.\n";
+        }
         if(jQuery("#cust_email").val() == ""){
             err += "Customer Email is required.\n";
+            alert(err);
         } else {
             var input=$(this);
             var re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
             var is_email=re.test(jQuery("#cust_email").val());
-            if(is_email){}else{
-                 err += "Customer Email is invalid.\n";
-            }
-        }
-        if(jQuery("#cust_country").val() == ""){
-            err += "Country is required.\n";
-        }
-        if(err != ""){
-            alert(err);
-        } else {        
-            jQuery("#remarks").show();
-            jQuery("#remarks").html("<span style='color:red'>Saving Data...</span>");
-            overlay();
-            var data_obj = {id:jQuery("#cust_id").val(), 
-                            name: jQuery("#cust_name").val() , 
-                            email: jQuery("#cust_email").val(),
-                            country:jQuery("#cust_country").val()};
-            data_obj = jQuery.toJSON(data_obj);
-            jQuery.ajax({
-                    type: "POST",
-                    url: jQuery("#base_url").val() + "/update_customer",
-                    cache: false,
-                    data: { args:data_obj }
-            }).done(function( msg ) {
-                    jQuery("#remarks").html("");
-                    jQuery("#remarks").hide();
-                    jQuery("#main_content").html(msg);
-            });
+            if(is_email){
+                jQuery("#remarks").show();
+                jQuery("#remarks").html("<span style='color:red'>Validating Email...</span>");
+                var data_obj = { email: jQuery("#cust_email").val()};
+                data_obj = jQuery.toJSON(data_obj);
+                jQuery.ajax({
+                        type: "POST",
+                        url: jQuery("#base_url").val() + "/check_email",
+                        cache: false,
+                        data: { args:data_obj }
+                }).done(function( msg ) {
+                    if(jQuery.trim(msg) == "1"){
+                        process_data("update");
+                    } else {
+                        err += "Customer Email DNS is invalid.\n";
+                        alert(err);
+                        jQuery("#remarks").hide();
+                    }
+                });
+            } else{
+                err += "Customer Email is invalid.\n";
+                alert(err);
+                jQuery("#remarks").hide();
+            } 
         }
     });	 
     jQuery("#save_btn").click(function(){
@@ -197,41 +227,42 @@ jQuery(document).ready(function(){
         if(jQuery("#cust_name").val() == ""){
             err += "Customer Name is required.\n";
         }
+
+        if(jQuery("#cust_country").val() == ""){
+            err += "Country is required.\n";
+        }
+        
         if(jQuery("#cust_email").val() == ""){
             err += "Customer Email is required.\n";
+            alert(err);
         } else {
             var input=$(this);
             var re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
             var is_email=re.test(jQuery("#cust_email").val());
-            if(is_email){}else{
-                 err += "Customer Email is invalid.\n";
+            if(is_email){
+                jQuery("#remarks").show();
+                jQuery("#remarks").html("<span style='color:red'>Validating Email...</span>");
+                var data_obj = { email: jQuery("#cust_email").val()};
+                data_obj = jQuery.toJSON(data_obj);
+                jQuery.ajax({
+                        type: "POST",
+                        url: jQuery("#base_url").val() + "/check_email",
+                        cache: false,
+                        data: { args:data_obj }
+                }).done(function( msg ) {
+                    if(jQuery.trim(msg) == "1"){
+                        process_data("insert");
+                    } else {
+                        err += "Customer Email DNS is invalid.\n";
+                        alert(err);
+                        jQuery("#remarks").hide();
+                    }
+                });
+            }else{
+                err += "Customer Email is invalid.\n";
+                alert(err);
+                jQuery("#remarks").hide();
             }
-        }
-        if(jQuery("#cust_country").val() == ""){
-            err += "Country is required.\n";
-        }
-        if(err != ""){
-            alert(err);
-        } else {
-            jQuery("#remarks").show();
-            jQuery("#remarks").html("<span style='color:red'>Adding Record...</span>");
-            overlay();
-            var data_obj = {name: jQuery("#cust_name").val() , 
-                            email: jQuery("#cust_email").val(),
-                            country:jQuery("#cust_country").val()};
-            data_obj = jQuery.toJSON(data_obj);
-            jQuery.ajax({
-                    type: "POST",
-                    url: jQuery("#base_url").val() + "/add_customer",
-                    cache: false,
-                    data: { args:data_obj }
-            }).done(function( msg ) {
-                    jQuery("#remarks").html("");
-                    jQuery("#remarks").hide();
-                    jQuery("#main_content").html(msg);
-                    jQuery("#process_data").hide();
-                    jQuery("#process_data .cust_in,#process_data select").val("");
-            });	
         }
     });	 
     jQuery("body").on("click","#send_email",function(){

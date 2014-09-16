@@ -22,7 +22,8 @@ class display_screen{
                                          "search_customer",
                                          "view_transactions",
                                          "sort_by",
-                                         "send_email");
+                                         "send_email",
+                                         "check_email");
     
     /**
      * Determines process or screen
@@ -88,11 +89,12 @@ class display_screen{
     protected static function display_main(){
         
         // redisplay table
-        $query = array('stmt' => "SELECT cust.*, SUM(p.transactions_amount) as total 
+        $query = array('stmt' => "SELECT cust.*, COALESCE(SUM(p.transactions_amount), 0) AS total 
                                   FROM customers cust 
                                   LEFT JOIN transactions p 
                                   ON p.transactions_customer_id = cust.customer_id 
-                                  GROUP BY p.transactions_customer_id",
+                                  GROUP BY cust.customer_id
+                                  ORDER BY cust.customer_id DESC",
                        'bind' => '',
                        'fields' => '');
         
@@ -132,8 +134,9 @@ class display_screen{
         $email = $json->email;
         $country = $json->country;
         
-        $query = array('stmt' => "INSERT INTO customers 
-                                  VALUES(NULL,?,?,?)",
+        $query = array('stmt' => "INSERT INTO 
+                                  customers(customer_name,customer_email,customer_country) 
+                                  VALUES(?,?,?)",
                        'bind' => 'sss',
                        'fields' => array($name,$email,$country));
         
@@ -207,15 +210,16 @@ class display_screen{
     protected static function display_table(){
 
         // redisplay table
-        $query = array('stmt' => "SELECT cust.*, SUM(p.transactions_amount) as total 
+        $query = array('stmt' => "SELECT cust.*, COALESCE(SUM(p.transactions_amount), 0) AS total 
                                   FROM customers cust 
                                   LEFT JOIN transactions p 
                                   ON p.transactions_customer_id = cust.customer_id 
-                                  GROUP BY p.transactions_customer_id",
+                                  GROUP BY cust.customer_id
+                                  ORDER BY cust.customer_id DESC",
                        'bind' => '',
                        'fields' => '');
         
-        $data["customers"] = db::execute_query($query,true);
+        $c = $data["customers"] = db::execute_query($query,true);
         self::add_screen("main_table",$data);
 
     }
@@ -230,11 +234,11 @@ class display_screen{
         
         $sort = $_POST["args"];
 
-        $query = array('stmt' => "SELECT cust.*, SUM(p.transactions_amount) as total 
+        $query = array('stmt' => "SELECT cust.*, COALESCE(SUM(p.transactions_amount), 0) AS total
                                   FROM customers cust 
                                   LEFT JOIN transactions p 
                                   ON p.transactions_customer_id = cust.customer_id 
-                                  GROUP BY p.transactions_customer_id
+                                  GROUP BY cust.customer_id
                                   ORDER BY $sort",        
                        'bind' => '',
                        'fields' => '');
@@ -258,12 +262,13 @@ class display_screen{
         
         
         // redisplay table
-        $query = array('stmt' => "SELECT cust.*, SUM(p.transactions_amount) as total 
+        $query = array('stmt' => "SELECT cust.*, COALESCE(SUM(p.transactions_amount), 0) AS total
                                   FROM customers cust 
                                   LEFT JOIN transactions p 
                                   ON p.transactions_customer_id = cust.customer_id
                                   WHERE cust.customer_name LIKE '%$search%'
-                                  GROUP BY p.transactions_customer_id",
+                                  GROUP BY cust.customer_id
+                                  ORDER BY cust.customer_id DESC",
                        'bind' => '',
                        'fields' => '');
         
@@ -289,22 +294,24 @@ class display_screen{
         
         if($limit == "all"){
             // redisplay table
-            $query = array('stmt' => "SELECT cust.*, SUM(p.transactions_amount) as total 
+            $query = array('stmt' => "SELECT cust.*, COALESCE(SUM(p.transactions_amount), 0) AS total 
                                       FROM customers cust 
                                       LEFT JOIN transactions p 
                                       ON p.transactions_customer_id = cust.customer_id 
-                                      GROUP BY p.transactions_customer_id",
+                                      GROUP BY cust.customer_id
+                                      ORDER BY cust.customer_id DESC",
                            'bind' => '',
                            'fields' => '');
             
         } else {
         
             // redisplay table
-            $query = array('stmt' => "SELECT cust.*, SUM(p.transactions_amount) as total 
+            $query = array('stmt' => "SELECT cust.*, COALESCE(SUM(p.transactions_amount), 0) AS total
                                       FROM customers cust 
                                       LEFT JOIN transactions p 
                                       ON p.transactions_customer_id = cust.customer_id 
-                                      GROUP BY p.transactions_customer_id
+                                      GROUP BY cust.customer_id
+                                      ORDER BY cust.customer_id DESC
                                       LIMIT $start_main, $limit",
                            'bind' => '',
                            'fields' => '');
@@ -422,6 +429,28 @@ class display_screen{
         exit();
 
     }   
+    
+    /**
+     * Check Email DNS
+     * 
+     * @param string post email
+     * @return string 1 = true, 0=false
+     */    
+    protected static function check_email(){
+        
+        $j = json_decode($_POST["args"]);
+        $email = trim($j->email);
+        if ($email !== ""){
+             if(preg_match("/^[_\.0-9a-zA-Z-]+@([0-9a-zA-Z][0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}$/i", $email))  { 
+                list($userid, $d) = explode( "@", $email);
+                if (checkdnsrr($d, 'MX')) { 
+                     exit("1");	
+                } 
+             } 
+        }
+        exit("0");
+
+    }       
     
     /**
      * Arrange html message then call utility email

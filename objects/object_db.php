@@ -107,7 +107,7 @@ class db{
         $query = mysqli_prepare($connection,$q["stmt"]);
         
         // another way to bind param but will use the other one instead.
-        // call_user_func_array(array($query,'bind_param'), self::set_reference($q["fields"])); 
+         //call_user_func_array(array($query,'bind_param'), self::set_reference($q["fields"])); 
         // only bind if there is a binding string
         if(!empty($q["bind"])){
             call_user_func_array('mysqli_stmt_bind_param', array_merge (array($query, $q["bind"]), self::set_reference($q["fields"]))); 
@@ -129,6 +129,7 @@ class db{
                                 $params[] = &$row[$field->name];
                 }
                 call_user_func_array(array($query, 'bind_result'), $params);
+
                 while ($query->fetch()) {
                                 $temp = array();
                                 foreach($row as $key => $val) {
@@ -139,7 +140,8 @@ class db{
 
                 $meta->free();
                 $query->close(); 
-                return $result;                
+                return $result;
+                
             }
 
         } else {
